@@ -1,166 +1,283 @@
 import React, { useState } from "react";
-import BasicInfo from "./BasicInfo";
-import { Address } from "./Address";
-import { OtherInfo } from "./OtherInfo";
 
 const Form = () => {
-  const [page, setPage] = useState(0);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    age: "",
-    address: "",
-    firstCompany: "",
-    other: "",
-  });
-  const formSteps = ["Basic Info", "Address", "Other Info"];
+  const [selectedPage, setSelectedPage] = useState(0);
+  const [formV2Data, setFormV2Data] = useState(formFields);
 
-  const handleFormDataChange = (name, value) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+  const handlePageChange = (index) => {
+    if (index < 0) return;
+    if (index >= formV2Data.length) return;
+    if (formV2Data[selectedPage].form.some((field) => !field.isValid)) return;
+
+    setSelectedPage(index);
   };
 
-  const validateStep = (step) => {
-    switch (step) {
-      // Perform validation for the first step (Basic Info)
-      case 0:
-        return (
-          formData.firstName.trim() !== "" &&
-          formData.firstName.length >= 3 &&
-          formData.lastName.trim() !== "" &&
-          formData.lastName.length >= 3 &&
-          formData.age.trim() !== "" &&
-          formData.age >= 1 &&
-          formData.age <= 120
-        );
-
-      case 1:
-        // Perform validation for the second step (Address)
-        return (
-          formData.email.trim() !== "" &&
-          formData.email.includes("@") &&
-          formData.password.trim() !== "" &&
-          formData.password.length >= 6 &&
-          formData.password.length < 12 &&
-          formData.confirmPassword === formData.password &&
-          formData.address.trim() !== "" &&
-          formData.address.length > 4
-        );
-
-      case 2:
-        // Perform validation for the third step (Other Info)
-        return (
-          formData.other.trim() !== "" &&
-          formData.firstCompany.trim() !== "" &&
-          formData.other.length >= 4 &&
-          formData.firstCompany.length >= 4
-        );
-
-      default:
-        return true;
-    }
-  };
-
-  const handleNext = () => {
-    if (page === formSteps.length - 1) {
-      alert("Data Saved!!");
-      console.log(formData);
-      setFormData({
-        email: "",
-        password: "",
-        confirmPassword: "",
-        firstName: "",
-        lastName: "",
-        age: "",
-        address: "",
-        firstCompany: "",
-        other: "",
-      });
-      setPage(0);
-    } else {
-      if (validateStep(page)) {
-        setPage((prevPage) => prevPage + 1);
+  const validateField = ({ value, validationArr }) => {
+    if (validationArr?.length) {
+      const failedCheck = validationArr.filter(
+        (innerCondition) => !innerCondition.validate(value)
+      );
+      if (failedCheck?.length) {
+        return { isValid: false, error: failedCheck[0].error };
+      } else {
+        return { isValid: true, error: "" };
       }
+    } else {
+      return { isValid: true, error: "" };
     }
   };
 
-  const handlePrev = () => {
-    setPage((prevPage) => prevPage - 1);
-  };
-
-  const renderStep = (step) => {
-    switch (step) {
-      case 0:
-        return (
-          <BasicInfo
-            formData={formData}
-            onChange={handleFormDataChange}
-            setFormData={setFormData}
-            validationError={validateStep(page)}
-          />
-        );
-      case 1:
-        return (
-          <Address
-            formData={formData}
-            onChange={handleFormDataChange}
-            setFormData={setFormData}
-            validationError={validateStep(page)}
-          />
-        );
-      case 2:
-        return (
-          <OtherInfo
-            formData={formData}
-            onChange={handleFormDataChange}
-            setFormData={setFormData}
-            validationError={validateStep(page)}
-          />
-        );
-      default:
-        return null;
-    }
+  const handleFormChange = ({ field, value, title, validationArr }) => {
+    const isValid = validateField({ field, value, validationArr });
+    console.log("isValid", isValid);
+    setFormV2Data((innerForm) =>
+      innerForm.map((inner2) =>
+        inner2.title === title
+          ? {
+              ...inner2,
+              form: inner2.form.map((inner3) =>
+                inner3.field === field
+                  ? { ...inner3, value: value, ...isValid }
+                  : { ...inner3 }
+              ),
+            }
+          : { ...inner2 }
+      )
+    );
   };
 
   return (
-    <div className="form">
-      <div className="form-container">
-        <div className="header">{formSteps[page]}</div>
-        <div className="body">{renderStep(page)}</div>
-        <div className="footer">
-          <button
-            onClick={handlePrev}
-            disabled={page === 0}
-            style={{
-              backgroundColor: page === 0 && "grey",
-            }}
-          >
-            Prev
-          </button>
-          <h5>{`Step ${page + 1} of ${formSteps.length}`}</h5>
-          <button
-            onClick={handleNext}
-            disabled={!validateStep(page)}
-            style={{
-              backgroundColor:
-                validateStep(page) && page !== formSteps.length - 1
-                  ? "rgb(0, 166, 255)"
-                  : validateStep(page) && page === formSteps.length - 1
-                  ? "#6BD640"
-                  : "grey",
-            }}
-          >
-            {page === formSteps.length - 1 ? "Submit" : "Next"}
-          </button>
-        </div>
+    <div style={formStyle}>
+      <div style={formContainerStyle}>
+        {formV2Data.map((formObj, index) => (
+          <>
+            {index === selectedPage && (
+              <>
+                <h3>{formObj?.title}</h3>
+                <div style={{ ...flexCenterCenter, flexDirection: "column" }}>
+                  {formObj?.form?.map((innerForm) => (
+                    <div style={inputContainerStyle}>
+                      <label>{innerForm.title}</label>
+                      <input
+                        value={innerForm.value}
+                        placeholder={innerForm.placeholder}
+                        type={innerForm.type}
+                        style={innerForm.isValid ? inputStyle : inputErrorStyle}
+                        onChange={(e) =>
+                          handleFormChange({
+                            field: innerForm.field,
+                            value: e.target.value,
+                            title: formObj?.title,
+                            validationArr: innerForm.validationArr,
+                          })
+                        }
+                      />
+                      <div style={errorStyle}>{innerForm?.error}</div>
+                    </div>
+                  ))}
+                  <div style={buttonContainerStyle}>
+                    <button
+                      style={buttonStyle}
+                      onClick={() => handlePageChange(index - 1)}
+                      disabled={index === 0}
+                    >
+                      Prev
+                    </button>
+                    <button
+                      style={buttonStyle}
+                      onClick={() => handlePageChange(index + 1)}
+                      disabled={formV2Data[selectedPage].form.some(
+                        (field) => !field.isValid
+                      )}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        ))}
       </div>
     </div>
   );
 };
 
 export default Form;
+
+const formFields = [
+  {
+    form: [
+      {
+        title: "First Name",
+        field: "firstName",
+        type: "text",
+        value: "anisha",
+        isValid: false,
+        error: "",
+        validationArr: [
+          {
+            validate: (value) => value.length > 0,
+            error: "First name id required",
+          },
+          {
+            validate: (value) => value.length > 3,
+            error: "First name must be more than 3 chracter",
+          },
+        ],
+        placeholder: "Your First Name",
+      },
+      {
+        title: "Last Name",
+        field: "lastName",
+        type: "text",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Last Name",
+      },
+      {
+        title: "Age",
+        field: "age",
+        type: "number",
+        placeholder: "Your Age",
+        value: 0,
+      },
+    ],
+    title: "Basic Info",
+  },
+  {
+    form: [
+      {
+        title: "Address",
+        field: "address",
+        type: "text",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Address",
+      },
+      {
+        title: "Password",
+        field: "password",
+        type: "password",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Password",
+      },
+      {
+        title: "Confirm Password",
+        field: "confirmPassword",
+        type: "text",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Confirm Password",
+      },
+      {
+        title: "Email",
+        field: "email",
+        type: "email",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Email",
+      },
+    ],
+    title: "Address",
+  },
+  {
+    form: [
+      {
+        title: "Address",
+        field: "address",
+        type: "text",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Address",
+      },
+      {
+        title: "Password",
+        field: "password",
+        type: "password",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Password",
+      },
+      {
+        title: "Confirm Password",
+        field: "confirmPassword",
+        type: "text",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Confirm Password",
+      },
+      {
+        title: "Email",
+        field: "email",
+        type: "email",
+        value: "",
+        isValid: false,
+        check: "",
+        placeholder: "Your Email",
+      },
+    ],
+    title: "Anything 3",
+  },
+];
+const formStyle = {
+  margin: "0 auto",
+  width: "50%",
+};
+
+const formContainerStyle = {
+  border: "1px solid #ccc",
+  borderRadius: "8px",
+  padding: "20px",
+  boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+};
+
+const inputContainerStyle = {
+  marginBottom: "15px",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "8px",
+  border: "1px solid #ccc",
+  borderRadius: "4px",
+};
+
+const inputErrorStyle = {
+  ...inputStyle,
+  borderColor: "red",
+};
+
+const buttonContainerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+};
+
+const buttonStyle = {
+  padding: "10px 20px",
+  background: "#007bff",
+  color: "#fff",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+  marginRight: "10px",
+};
+
+const flexCenterCenter = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+const errorStyle = {
+  color: "red",
+  fontSize: "12px",
+};

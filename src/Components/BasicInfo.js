@@ -1,6 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 
 function BasicInfo({ formData, setFormData }) {
+  const [showErr, setShowErr] = useState("");
+
+  const throwErr = (age) => {
+    if (age <= 0) {
+      setShowErr("Age can not be less than 1 year!");
+    } else if (age >= 121) {
+      setShowErr("Age can not be greater than 120 years!");
+    } else {
+      setShowErr("");
+    }
+  };
+
   return (
     <div className="personal-info-container">
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -42,8 +54,10 @@ function BasicInfo({ formData, setFormData }) {
           value={formData.age}
           onChange={(e) => {
             setFormData({ ...formData, age: e.target.value });
+            throwErr(e.target.value);
           }}
         />
+        {showErr}
       </div>
     </div>
   );

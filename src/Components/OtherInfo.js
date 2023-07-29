@@ -1,6 +1,6 @@
 import React from "react";
 
-export const OtherInfo = ({ formData, setFormData }) => {
+export const OtherInfo = ({ formData, setFormData, showError }) => {
   return (
     <div className="other-info-container">
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -15,6 +15,7 @@ export const OtherInfo = ({ formData, setFormData }) => {
             setFormData({ ...formData, firstCompany: e.target.value });
           }}
         />
+        {/* {showError} */}
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label style={{ margin: "1rem 0 0 0.4rem" }} for="other">
@@ -28,6 +29,7 @@ export const OtherInfo = ({ formData, setFormData }) => {
             setFormData({ ...formData, other: e.target.value });
           }}
         />
+        {/* {showError} */}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Address = ({ formData, setFormData }) => {
+export const Address = ({ formData, setFormData, showError }) => {
   return (
     <>
       <div className="personal-info-container">
@@ -16,6 +16,7 @@ export const Address = ({ formData, setFormData }) => {
               setFormData({ ...formData, address: e.target.value });
             }}
           />
+          {/* {showError} */}
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <label style={{ margin: "1rem 0 0 0.4rem" }} for="password">
@@ -29,6 +30,7 @@ export const Address = ({ formData, setFormData }) => {
               setFormData({ ...formData, password: e.target.value });
             }}
           />
+          {/* {showError} */}
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <label style={{ margin: "1rem 0 0 0.4rem" }} for="confirmPassword">
@@ -42,6 +44,7 @@ export const Address = ({ formData, setFormData }) => {
               setFormData({ ...formData, confirmPassword: e.target.value });
             }}
           />
+          {/* {showError} */}
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <label style={{ margin: "1rem 0 0 0.4rem" }} for="email">
@@ -55,6 +58,7 @@ export const Address = ({ formData, setFormData }) => {
               setFormData({ ...formData, email: e.target.value });
             }}
           />
+          {/* {showError} */}
         </div>
       </div>
     </>

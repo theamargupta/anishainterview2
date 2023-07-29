@@ -32,7 +32,9 @@ const Form = () => {
         return (
           formData.firstName.trim() !== "" &&
           formData.lastName.trim() !== "" &&
-          formData.age.trim() !== ""
+          (formData.age.trim() !== "" &&
+          (formData.age >= 1 &&
+          formData.age <= 120))
         );
 
       case 1:
@@ -90,6 +92,7 @@ const Form = () => {
             formData={formData}
             onChange={handleFormDataChange}
             setFormData={setFormData}
+            validationError={validateStep(page)}
           />
         );
       case 1:
@@ -98,6 +101,7 @@ const Form = () => {
             formData={formData}
             onChange={handleFormDataChange}
             setFormData={setFormData}
+            validationError={validateStep(page)}
           />
         );
       case 2:
@@ -106,6 +110,7 @@ const Form = () => {
             formData={formData}
             onChange={handleFormDataChange}
             setFormData={setFormData}
+            validationError={validateStep(page)}
           />
         );
       default:

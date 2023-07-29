@@ -18,33 +18,98 @@ const Form = () => {
   });
   const formSteps = ["Basic Info", "Address", "Other Info"];
 
-  const showPage = () => {
-    if (page === 0) {
-      return <BasicInfo formData={formData} setFormData={setFormData} />;
-    } else if (page === 1) {
-      return <Address formData={formData} setFormData={setFormData} />;
-    } else {
-      return <OtherInfo formData={formData} setFormData={setFormData} />;
-    }
-    // switch (page) {
-    //   case 0:
-    //     return <BasicInfo formData={formData} setFormData={setFormData} />;
-    //   case 1:
-    //     return <Address formData={formData} setFormData={setFormData} />;
-    //   case 2:
-    //     return <OtherInfo formData={formData} setFormData={setFormData} />;
-    //   default:
-    //     return <BasicInfo formData={formData} setFormData={setFormData} />;
-    //   // Handle cases when `page` does not match any of the defined cases
-    // }
+  const handleFormDataChange = (name, value) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
 
-  const dataSubmit = () => {
+  const validateStep = (step) => {
+    switch (step) {
+      // Perform validation for the first step (Basic Info)
+      case 0:
+        return (
+          formData.firstName.trim() !== "" &&
+          formData.lastName.trim() !== "" &&
+          formData.age.trim() !== ""
+        );
+
+      case 1:
+        // Perform validation for the second step (Address)
+        return (
+          formData.email.trim() !== "" &&
+          formData.password.trim() !== "" &&
+          formData.confirmPassword === formData.password &&
+          formData.address.trim() !== ""
+        );
+
+      case 2:
+        // Perform validation for the third step (Other Info)
+        return (
+          formData.other.trim() !== "" && formData.firstCompany.trim() !== ""
+        );
+
+      default:
+        return true;
+    }
+  };
+
+  const handleNext = () => {
     if (page === formSteps.length - 1) {
       alert("Data Saved!!");
       console.log(formData);
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        firstName: "",
+        lastName: "",
+        age: "",
+        address: "",
+        firstCompany: "",
+        other: "",
+      });
+      setPage(0);
     } else {
-      setPage((previousPage) => previousPage + 1);
+      if (validateStep(page)) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    }
+  };
+
+  const handlePrev = () => {
+    setPage((prevPage) => prevPage - 1);
+  };
+
+  const renderStep = (step) => {
+    switch (step) {
+      case 0:
+        return (
+          <BasicInfo
+            formData={formData}
+            onChange={handleFormDataChange}
+            setFormData={setFormData}
+          />
+        );
+      case 1:
+        return (
+          <Address
+            formData={formData}
+            onChange={handleFormDataChange}
+            setFormData={setFormData}
+          />
+        );
+      case 2:
+        return (
+          <OtherInfo
+            formData={formData}
+            onChange={handleFormDataChange}
+            setFormData={setFormData}
+          />
+        );
+      default:
+        return null;
     }
   };
 
@@ -52,24 +117,28 @@ const Form = () => {
     <div className="form">
       <div className="form-container">
         <div className="header">{formSteps[page]}</div>
-        <div className="body">{showPage()}</div>
+        <div className="body">{renderStep(page)}</div>
         <div className="footer">
           <button
-            onClick={() => {
-              setPage((previousPage) => previousPage - 1);
-            }}
+            onClick={handlePrev}
             disabled={page === 0}
-            style={{ backgroundColor: page === 0 && "grey" }}
+            style={{
+              backgroundColor: page === 0 && "grey",
+            }}
           >
             Prev
           </button>
-          <h5>{`Step ${page} of ${formSteps.length}`}</h5>
+          <h5>{`Step ${page + 1} of ${formSteps.length}`}</h5>
           <button
-            onClick={() => {
-              dataSubmit();
-            }}
+            onClick={handleNext}
+            disabled={!validateStep(page)}
             style={{
-              backgroundColor: page === formSteps.length - 1 && "green",
+              backgroundColor:
+                validateStep(page) && page !== formSteps.length - 1
+                  ? "rgb(0, 166, 255)"
+                  : validateStep(page) && page === formSteps.length - 1
+                  ? "#6BD640"
+                  : "grey",
             }}
           >
             {page === formSteps.length - 1 ? "Submit" : "Next"}

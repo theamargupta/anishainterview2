@@ -31,25 +31,34 @@ const Form = () => {
       case 0:
         return (
           formData.firstName.trim() !== "" &&
+          formData.firstName.length >= 3 &&
           formData.lastName.trim() !== "" &&
-          (formData.age.trim() !== "" &&
-          (formData.age >= 1 &&
-          formData.age <= 120))
+          formData.lastName.length >= 3 &&
+          formData.age.trim() !== "" &&
+          formData.age >= 1 &&
+          formData.age <= 120
         );
 
       case 1:
         // Perform validation for the second step (Address)
         return (
           formData.email.trim() !== "" &&
+          formData.email.includes("@") &&
           formData.password.trim() !== "" &&
+          formData.password.length >= 6 &&
+          formData.password.length < 12 &&
           formData.confirmPassword === formData.password &&
-          formData.address.trim() !== ""
+          formData.address.trim() !== "" &&
+          formData.address.length > 4
         );
 
       case 2:
         // Perform validation for the third step (Other Info)
         return (
-          formData.other.trim() !== "" && formData.firstCompany.trim() !== ""
+          formData.other.trim() !== "" &&
+          formData.firstCompany.trim() !== "" &&
+          formData.other.length >= 4 &&
+          formData.firstCompany.length >= 4
         );
 
       default:

@@ -1,15 +1,44 @@
 import React, { useState } from "react";
 
 function BasicInfo({ formData, setFormData }) {
-  const [showErr, setShowErr] = useState("");
+  const [showErr, setShowErr] = useState({
+    email: "",
+    address: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const throwErr = (age) => {
-    if (age <= 0) {
-      setShowErr("Age can not be less than 1 year!");
-    } else if (age >= 121) {
-      setShowErr("Age can not be greater than 120 years!");
-    } else {
-      setShowErr("");
+  const throwErr = (value, key) => {
+    switch (key) {
+      case "firstName":
+        if (value?.length < 3) {
+          setShowErr({
+            firstName: "The name should contain atleast 3 characters!",
+          });
+        } else {
+          setShowErr({ firstName: "" });
+        }
+        break;
+      case "lastName":
+        if (value?.length < 3) {
+          setShowErr({
+            lastName: "The name should contain atleast 3 characters!",
+          });
+        } else {
+          setShowErr({ lastName: "" });
+        }
+        break;
+      case "age":
+        if (isNaN(value) && value <= 0) {
+          setShowErr("Age can not be less than 1 year!");
+        } else if (isNaN(value) && value >= 121) {
+          setShowErr("Age can not be greater than 120 years!");
+        } else {
+          setShowErr("");
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -26,8 +55,10 @@ function BasicInfo({ formData, setFormData }) {
           value={formData.firstName}
           onChange={(e) => {
             setFormData({ ...formData, firstName: e.target.value });
+            throwErr(e.target.value, "firstName");
           }}
         />
+        {showErr.firstName}
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label style={{ margin: "1rem 0 0 0.4rem" }} for="lastName">
@@ -40,8 +71,10 @@ function BasicInfo({ formData, setFormData }) {
           value={formData.lastName}
           onChange={(e) => {
             setFormData({ ...formData, lastName: e.target.value });
+            throwErr(e.target.value, "lastName");
           }}
         />
+        {showErr.lastName}
       </div>
       <div style={{ display: "flex", flexDirection: "column" }}>
         <label style={{ margin: "1rem 0 0 0.4rem" }} for="age">
@@ -57,7 +90,7 @@ function BasicInfo({ formData, setFormData }) {
             throwErr(e.target.value);
           }}
         />
-        {showErr}
+        {showErr.age}
       </div>
     </div>
   );

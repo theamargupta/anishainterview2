@@ -15,14 +15,14 @@ const NewForm = () => {
   const [passwordErr, setPasswordErr] = useState("");
   const [confirmPasswordErr, setConfirmPasswordErr] = useState("");
 
-  const handleFormChange = (e) => {
-    e.preventDefault();
-    let inputName = e.target.name;
-    console.log("e", e, inputName, e.target.value);
-    setFormValue({ ...formValue, [inputName]: e.target.value });
-  };
+//   const handleFormChange = (e) => {
+//     e.preventDefault();
+//     let inputName = e.target.name;
+//     console.log("e", e, inputName, e.target.value);
+//     setFormValue({ ...formValue, [inputName]: e.target.value });
+//   };
 
-  const inputValueLength = (inputValue) => inputValue?.length > 3;
+//   const inputValueLength = (inputValue) => inputValue?.length > 3;
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -15,7 +15,9 @@ const Form = () => {
   const validateField = ({ value, validationArr }) => {
     if (validationArr?.length) {
       const failedCheck = validationArr.filter(
-        (innerCondition) => !innerCondition.validate(value)
+        (innerCondition) => {
+          console.log(!innerCondition.validate(value, formV2Data), formV2Data)
+          return !innerCondition.validate(value, formV2Data)}
       );
       if (failedCheck?.length) {
         return { isValid: false, error: failedCheck[0].error };
@@ -29,19 +31,18 @@ const Form = () => {
 
   const handleFormChange = ({ field, value, title, validationArr }) => {
     const isValid = validateField({ field, value, validationArr });
-    console.log("isValid", isValid);
-    setFormV2Data((innerForm) =>
-      innerForm.map((inner2) =>
-        inner2.title === title
+    setFormV2Data((threeForms) =>
+      threeForms.map((oneOfthreeForm) =>
+        oneOfthreeForm.title === title
           ? {
-              ...inner2,
-              form: inner2.form.map((inner3) =>
-                inner3.field === field
-                  ? { ...inner3, value: value, ...isValid }
-                  : { ...inner3 }
+              ...oneOfthreeForm,
+              form: oneOfthreeForm.form.map((oneInputOFEachForm) =>
+                oneInputOFEachForm.field === field
+                  ? { ...oneInputOFEachForm, value: value, ...isValid }
+                  : { ...oneInputOFEachForm }
               ),
             }
-          : { ...inner2 }
+          : { ...oneOfthreeForm }
       )
     );
   };
@@ -77,14 +78,22 @@ const Form = () => {
                   ))}
                   <div style={buttonContainerStyle}>
                     <button
-                      style={buttonStyle}
+                      style={
+                        index === 0
+                          ? { ...buttonStyle, backgroundColor: "grey" }
+                          : buttonStyle
+                      }
                       onClick={() => handlePageChange(index - 1)}
                       disabled={index === 0}
                     >
                       Prev
                     </button>
                     <button
-                      style={buttonStyle}
+                      style={
+                        index === -1
+                          ? { ...buttonStyle, backgroundColor: "grey" }
+                          : buttonStyle
+                      }
                       onClick={() => handlePageChange(index + 1)}
                       disabled={formV2Data[selectedPage].form.some(
                         (field) => !field.isValid
@@ -105,7 +114,8 @@ const Form = () => {
 
 export default Form;
 // Validation functions
-const validateLength = (value) => value.length > 0;
+const isRequired = (value) => value.length > 0;
+const validateLength = (value) => value.length > 3;
 
 const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -117,16 +127,16 @@ const formFields = [
         title: "First Name",
         field: "firstName",
         type: "text",
-        value: "anisha",
+        value: "",
         isValid: true,
         error: "",
         validationArr: [
           {
-            validate: validateLength,
+            validate: isRequired,
             error: "First name is required",
           },
           {
-            validate: (value) => value.length > 3,
+            validate: validateLength,
             error: "First name must be more than 3 characters",
           },
         ],
@@ -142,8 +152,12 @@ const formFields = [
         error: "",
         validationArr: [
           {
-            validate: validateLength,
+            validate: isRequired,
             error: "Last name is required",
+          },
+          {
+            validate: validateLength,
+            error: "Last name must be more than 3 characters",
           },
         ],
         placeholder: "Your Last Name",
@@ -159,8 +173,12 @@ const formFields = [
         error: "",
         validationArr: [
           {
-            validate: validateLength,
+            validate: isRequired,
             error: "Age should be a positive number",
+          },
+          {
+            validate: (value) => value >= 1 && value < 121,
+            error: "Age should be a positive number between 1 to 120",
           },
         ],
       },
@@ -182,6 +200,10 @@ const formFields = [
             validate: validateLength,
             error: "Address is required",
           },
+          {
+            validate: validateLength,
+            error: "Address must be more than 3 characters",
+          },
         ],
         placeholder: "Your Address",
       },
@@ -195,8 +217,19 @@ const formFields = [
         error: "",
         validationArr: [
           {
-            validate: (value) => value.length >= 6,
+            validate: (value) => value.length >= 6 && value.length < 12,
             error: "Password must have at least 6 characters",
+          },
+          {
+            validate: (value, formV2Data) =>
+              {
+                if(formV2Data[1].form[2].value !== "" || null){
+                  return value === formV2Data[1]?.form[2]?.value
+                }else{
+                  return;
+                }
+              },
+            error: "Passwords do not match",
           },
         ],
         placeholder: "Your Password",
@@ -211,7 +244,8 @@ const formFields = [
         error: "",
         validationArr: [
           {
-            validate: (value) => value === formFields[1].form[1].value, // Check if it matches the Password field value
+            validate: (value, formV2Data) =>
+              value === formV2Data[1].form[1].value, // Check if it matches the Password field value
             error: "Passwords do not match",
           },
         ],
@@ -238,10 +272,30 @@ const formFields = [
   },
   {
     form: [
-      // Address field
+      // First Company Name field (already has validation)
       {
-        title: "Address",
-        field: "address",
+        title: "First Company",
+        field: "firstCompany",
+        type: "text",
+        value: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: isRequired,
+            error: "First Company name is required",
+          },
+          {
+            validate: validateLength,
+            error: "First Company name must be more than 3 characters",
+          },
+        ],
+        placeholder: "Your First Company Name",
+      },
+      // Other Details field
+      {
+        title: "Other Details",
+        field: "other",
         type: "text",
         value: "",
         isValid: true,
@@ -249,61 +303,13 @@ const formFields = [
         validationArr: [
           {
             validate: validateLength,
-            error: "Address is required",
+            error: "Other Details must be more than 3 characters",
           },
         ],
-        placeholder: "Your Address",
-      },
-      // Password field
-      {
-        title: "Password",
-        field: "password",
-        type: "password",
-        value: "",
-        isValid: true,
-        error: "",
-        validationArr: [
-          {
-            validate: (value) => value.length >= 6,
-            error: "Password must have at least 6 characters",
-          },
-        ],
-        placeholder: "Your Password",
-      },
-      // Confirm Password field
-      {
-        title: "Confirm Password",
-        field: "confirmPassword",
-        type: "text",
-        value: "",
-        isValid: true,
-        error: "",
-        validationArr: [
-          {
-            validate: (value) => value === formFields[1].form[1].value, // Check if it matches the Password field value
-            error: "Passwords do not match",
-          },
-        ],
-        placeholder: "Your Confirm Password",
-      },
-      // Email field
-      {
-        title: "Email",
-        field: "email",
-        type: "email",
-        value: "",
-        isValid: true,
-        error: "",
-        validationArr: [
-          {
-            validate: validateEmail,
-            error: "Invalid email address",
-          },
-        ],
-        placeholder: "Your Email",
+        placeholder: "Other Details",
       },
     ],
-    title: "Anything 3",
+    title: "Other Info",
   },
 ];
 const formStyle = {

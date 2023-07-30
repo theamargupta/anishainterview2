@@ -104,84 +104,133 @@ const Form = () => {
 };
 
 export default Form;
+// Validation functions
+const validateLength = (value) => value.length > 0;
+
+const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const formFields = [
   {
     form: [
+      // First Name field (already has validation)
       {
         title: "First Name",
         field: "firstName",
         type: "text",
         value: "anisha",
-        isValid: false,
+        isValid: true,
         error: "",
         validationArr: [
           {
-            validate: (value) => value.length > 0,
-            error: "First name id required",
+            validate: validateLength,
+            error: "First name is required",
           },
           {
             validate: (value) => value.length > 3,
-            error: "First name must be more than 3 chracter",
+            error: "First name must be more than 3 characters",
           },
         ],
         placeholder: "Your First Name",
       },
+      // Last Name field
       {
         title: "Last Name",
         field: "lastName",
         type: "text",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: validateLength,
+            error: "Last name is required",
+          },
+        ],
         placeholder: "Your Last Name",
       },
+      // Age field
       {
         title: "Age",
         field: "age",
         type: "number",
         placeholder: "Your Age",
         value: 0,
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: validateLength,
+            error: "Age should be a positive number",
+          },
+        ],
       },
     ],
     title: "Basic Info",
   },
   {
     form: [
+      // Address field
       {
         title: "Address",
         field: "address",
         type: "text",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: validateLength,
+            error: "Address is required",
+          },
+        ],
         placeholder: "Your Address",
       },
+      // Password field
       {
         title: "Password",
         field: "password",
         type: "password",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: (value) => value.length >= 6,
+            error: "Password must have at least 6 characters",
+          },
+        ],
         placeholder: "Your Password",
       },
+      // Confirm Password field
       {
         title: "Confirm Password",
         field: "confirmPassword",
         type: "text",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: (value) => value === formFields[1].form[1].value, // Check if it matches the Password field value
+            error: "Passwords do not match",
+          },
+        ],
         placeholder: "Your Confirm Password",
       },
+      // Email field
       {
         title: "Email",
         field: "email",
         type: "email",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: validateEmail,
+            error: "Invalid email address",
+          },
+        ],
         placeholder: "Your Email",
       },
     ],
@@ -189,40 +238,68 @@ const formFields = [
   },
   {
     form: [
+      // Address field
       {
         title: "Address",
         field: "address",
         type: "text",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: validateLength,
+            error: "Address is required",
+          },
+        ],
         placeholder: "Your Address",
       },
+      // Password field
       {
         title: "Password",
         field: "password",
         type: "password",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: (value) => value.length >= 6,
+            error: "Password must have at least 6 characters",
+          },
+        ],
         placeholder: "Your Password",
       },
+      // Confirm Password field
       {
         title: "Confirm Password",
         field: "confirmPassword",
         type: "text",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: (value) => value === formFields[1].form[1].value, // Check if it matches the Password field value
+            error: "Passwords do not match",
+          },
+        ],
         placeholder: "Your Confirm Password",
       },
+      // Email field
       {
         title: "Email",
         field: "email",
         type: "email",
         value: "",
-        isValid: false,
-        check: "",
+        isValid: true,
+        error: "",
+        validationArr: [
+          {
+            validate: validateEmail,
+            error: "Invalid email address",
+          },
+        ],
         placeholder: "Your Email",
       },
     ],
